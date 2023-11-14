@@ -1,0 +1,9 @@
+google_api_python_client==2.97.0
+google_auth_oauthlib==1.0.0
+langdetect==1.0.9
+pandas==2.1.1
+protobuf==4.24.4
+pytube==15.0.0
+whisper==1.1.10
+youtube_transcript_api==0.6.1
+google-api-python-client
