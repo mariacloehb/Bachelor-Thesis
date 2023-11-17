@@ -5,6 +5,9 @@ from pytube import YouTube
 import pickle
 import sys
 import os
+if not os.path.exists("./data"):
+    os.makedirs("./data")
+
 
 KEYWORD = "vegan"
 YEAR = 2022

@@ -68,7 +68,7 @@ def get_video_details(service, video_id):
 
 if __name__ == '__main__':
 
-    KEYWORD = "vegan"
+    KEYWORD = "fastfashion"
     START_DATE = "2022-12-01T00:00:00Z"
     END_DATE = "2023-03-01T00:00:00Z"
 
@@ -90,6 +90,7 @@ if __name__ == '__main__':
             video_description = video_details['snippet']['description']
             video_timestamp = video_details['snippet']['publishedAt']
             video_likes = video_details['statistics']['likeCount']
+
             
             video_data.append({
                 'Video ID': video_id,
@@ -133,5 +134,5 @@ if __name__ == '__main__':
 
     retrieved_videos = df
 
-    with open("./data/retrieved_video_2022_key_"+str(KEYWORD)+".pickle", "wb") as token:    
+    with open("data/retrieved_video_2022_key_"+str(KEYWORD)+".pickle", "wb") as token:    
         pickle.dump(retrieved_videos, token)    
