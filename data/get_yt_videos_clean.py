@@ -8,6 +8,7 @@ import os
 import pickle
 import pandas as pd
 import sys
+import json
 
 SCOPES = ["https://www.googleapis.com/auth/youtube.force-ssl"]
 
@@ -68,14 +69,15 @@ def get_video_details(service, video_id):
 
 if __name__ == '__main__':
 
-    KEYWORD = "fastfashion"
-    START_DATE = "2022-12-01T00:00:00Z"
-    END_DATE = "2023-03-01T00:00:00Z"
+    KEYWORD1 = "adidas"
+    KEYWORD2 = "nike"
+    START_DATE = "2023-11-01T00:00:00Z"
+    END_DATE = "2023-12-05T00:00:00Z"
 
     youtube = youtube_authenticate()
 
     # Step 1: Search for videos based on the keyword
-    search_results = search_videos(youtube, threshold_api_units = 8000, q=KEYWORD, publishedAfter=START_DATE, publishedBefore=END_DATE, relevanceLanguage="en", type="video", part='id', maxResults=50, order="date")
+    search_results = search_videos(youtube, threshold_api_units = 8000, q=[KEYWORD1,KEYWORD2], publishedAfter=START_DATE, publishedBefore=END_DATE, relevanceLanguage="en", type="video", part='id', maxResults=50, order="date")
     
     video_data = []
     
@@ -86,53 +88,68 @@ if __name__ == '__main__':
         video_details = get_video_details(youtube, video_id)
         
         if video_details:
+            video_kind =video_details['kind']
             video_title = video_details['snippet']['title']
             video_description = video_details['snippet']['description']
             video_timestamp = video_details['snippet']['publishedAt']
-            video_likes = video_details['statistics']['likeCount']
+            video_channeltitle = video_details['snippet']['channelTitle']
+            video_viewcount = int(video_details['statistics'].get('viewCount', 0))
+            video_likes = int(video_details['statistics'].get('likeCount', 0))
 
             
             video_data.append({
-                'Video ID': video_id,
-                'Video Title': video_title,
-                'Video Timestamp': video_timestamp,
-                'Video Description': video_description,
-                'Video Likes': video_likes
+                'Video_kind': video_kind,
+                'Video_ID': video_id,
+                'Video_Title': video_title,
+                'Video_Timestamp': video_timestamp,
+                'Video_Channel_Title': video_channeltitle,
+                'Video_Description': video_description,
+                'Video_View_Count': video_viewcount,
+                'Video_Likes': video_likes
             })
 
-    # Create a DataFrame-like structure using pandas
+    # Sort videos based on the number of likes, filter out videos below threshold
+    like_threshold = 100
+    sorted_video_data = sorted(video_data, key=lambda video: video['Video_Likes'], reverse=True)
+    filtered_sorted_video_data = list(filter(lambda video: video['Video_Likes'] > like_threshold, sorted_video_data))
+
+    # Save video data to .json
+    with open('results.json', 'w') as file:
+        file.write(json.dumps({"items": filtered_sorted_video_data}, indent=4))
+
+    # # Create a DataFrame-like structure using pandas
     df = pd.DataFrame(video_data)
+    df.to_csv(path_or_buf="results.csv", sep=",", index=False)
+    # print(df.head())
+    # print(df["Video Timestamp"].min())
+    # print(df.shape)
 
-    print(df.head())
-    print(df["Video Timestamp"].min())
-    print(df.shape)
+    # # get transcripts if automatic caption is available
+    # video_ids = list(df["Video ID"].values)
 
-    # get transcripts if automatic caption is available
-    video_ids = list(df["Video ID"].values)
+    # transcript_list, unretrievable_videos = YouTubeTranscriptApi.get_transcripts(video_ids, continue_after_error=True)
 
-    transcript_list, unretrievable_videos = YouTubeTranscriptApi.get_transcripts(video_ids, continue_after_error=True)
+    # list_transcripts = []
 
-    list_transcripts = []
+    # for video_id in video_ids:
 
-    for video_id in video_ids:
+    #     if video_id in transcript_list.keys():
 
-        if video_id in transcript_list.keys():
+    #         srt = transcript_list.get(video_id)
 
-            srt = transcript_list.get(video_id)
+    #         text_list = []
+    #         for i in srt:
+    #             text_list.append(i['text'])
 
-            text_list = []
-            for i in srt:
-                text_list.append(i['text'])
-
-            text = '.'.join(text_list)
-            list_transcripts.append(text)
+    #         text = '.'.join(text_list)
+    #         list_transcripts.append(text)
             
-        else:
-            list_transcripts.append(None)
+    #     else:
+    #         list_transcripts.append(None)
 
-    df["Video Transcript"] = list_transcripts
+    # df["Video Transcript"] = list_transcripts
 
-    retrieved_videos = df
+    # retrieved_videos = df
 
-    with open("data/retrieved_video_2022_key_"+str(KEYWORD)+".pickle", "wb") as token:    
-        pickle.dump(retrieved_videos, token)    
+    # # Save dataframe to csv
+    # df.to_csv(path_or_buf="results.csv", sep=",")

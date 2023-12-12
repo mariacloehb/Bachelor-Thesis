@@ -9,11 +9,11 @@ if not os.path.exists("./data"):
     os.makedirs("./data")
 
 
-KEYWORD = "vegan"
+KEYWORD = "fastfashion"
 YEAR = 2022
 
-with open("./data/retrieved_video_"+YEAR+"_key_"+str(KEYWORD)+".pickle", "rb") as token:    
-    retrieved_videos = pickle.load(token)
+with open("./retrieved_video_"+YEAR+"_key_"+str(KEYWORD)+".pickle", "rb") as file:    
+    retrieved_videos = pickle.load(file)
 
 print("Year: "+str(YEAR))
 print("Total size: "+str(len(retrieved_videos)))
