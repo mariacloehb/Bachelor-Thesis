@@ -9,6 +9,7 @@ import pickle
 import pandas as pd
 import sys
 import json
+import datetime
 
 SCOPES = ["https://www.googleapis.com/auth/youtube.force-ssl"]
 
@@ -69,16 +70,15 @@ def get_video_details(service, video_id):
 
 if __name__ == '__main__':
 
-    KEYWORD1 = "adidas"
-    KEYWORD2 = "nike"
-    START_DATE = "2023-11-01T00:00:00Z"
-    END_DATE = "2023-12-05T00:00:00Z"
+    KEYWORD1 = "maxi skirt"
+    KEYWORD2 = ""
+    START_DATE = "2023-06-01T00:00:00Z"
+    END_DATE = "2023-12-01T00:00:00Z"
 
     youtube = youtube_authenticate()
 
     # Step 1: Search for videos based on the keyword
-    search_results = search_videos(youtube, threshold_api_units = 8000, q=[KEYWORD1,KEYWORD2], publishedAfter=START_DATE, publishedBefore=END_DATE, relevanceLanguage="en", type="video", part='id', maxResults=50, order="date")
-    
+    search_results = search_videos(youtube, threshold_api_units = 8000, q=KEYWORD1, publishedAfter=START_DATE, publishedBefore=END_DATE, relevanceLanguage="en", type="video", part='id', maxResults=50, order="date")
     video_data = []
     
     for video in search_results:
@@ -107,14 +107,19 @@ if __name__ == '__main__':
                 'Video_View_Count': video_viewcount,
                 'Video_Likes': video_likes
             })
+        
+    print(len(video_data))
 
     # Sort videos based on the number of likes, filter out videos below threshold
     like_threshold = 100
     sorted_video_data = sorted(video_data, key=lambda video: video['Video_Likes'], reverse=True)
     filtered_sorted_video_data = list(filter(lambda video: video['Video_Likes'] > like_threshold, sorted_video_data))
 
+    name = KEYWORD1 + '-' + KEYWORD2 if KEYWORD2 else KEYWORD1
+    date = START_DATE.split('T')[0] + '_' + END_DATE.split('T')[0]
+
     # Save video data to .json
-    with open('results.json', 'w') as file:
+    with open(f'youtube_results/{name}_{date}.json', 'w') as file:
         file.write(json.dumps({"items": filtered_sorted_video_data}, indent=4))
 
     # # Create a DataFrame-like structure using pandas

@@ -4,8 +4,6 @@ from pytrends.request import TrendReq as UTrendReq
 import matplotlib.pyplot as plt
 GET_METHOD='get'
 
-
-
 headers = {
     'authority': 'trends.google.com',
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
@@ -31,26 +29,40 @@ headers = {
     'x-client-data': 'CIi2yQEIpbbJAQipncoBCMv9ygEIkqHLAQiGoM0BCPWxzQEI3L3NAQjpxc0BCLrIzQEIpdzNAQjP380BCLXgzQEI4OHNAQjb480BCMbpzQEIss3EIhjAy8wBGMfhzQEYp+rNAQ==',
 }
 
-
+# Extend the default class
 class TrendReq(UTrendReq):
     def _get_data(self, url, method=GET_METHOD, trim_chars=0, **kwargs):
         return super()._get_data(url, method=GET_METHOD, trim_chars=trim_chars, headers=headers, **kwargs)
 
-pytrends = TrendReq(hl='en-US', tz=360)
-kw_list = ["adidas samba"]
-pytrends.build_payload(kw_list, cat=0, timeframe='today 3-m', geo='', gprop='')
+#Modifiable filters
+timeframe='2022-01-01 2023-01-12'
+kw_list = ["polene bag cyme"]
+
+
+# Instantiate the pytrends class and build the payload
+pytrends = TrendReq(retries=3,hl='en-US', tz=360)
+pytrends.build_payload(kw_list, cat=0, timeframe=timeframe, geo='', gprop='')
 
 #1 Interest over Time
-#data = pytrends.interest_over_time() 
-#data = data.reset_index() 
-#print(data.head())
+data = pytrends.interest_over_time() 
+data = data.reset_index() 
+print(data.head())
 
 #2 Related Queries
 data2 = pytrends.related_queries()
 #data2 = data2.reset_index()
 print(data2)
 
-#plt.plot(data["date"], data["adidas samba"]) 
-#plt.show()
-#fig = px.line(data, x="date", y=['Sooners'], title='Keyword Web Search Interest Over Time')
-#fig.show() 
+# Plotting results
+start, end = timeframe.split()
+plt.plot(data[kw_list[0]], label=kw_list[0])
+# Ucomment if plotting two items
+#plt.plot(data[kw_list[1]], label=kw_list[1])
+plt.title(f"Popularity over time for: {kw_list[0]}")
+plt.ylabel("Popularity")
+plt.xlabel("Time")
+plt.xticks([0, len(data[kw_list[0]])], [start, end])
+plt.legend()
+plt.show()
+fig = px.line(data, x="date", y=['Sooners'], title='Keyword Web Search Interest Over Time')
+fig.show() 
