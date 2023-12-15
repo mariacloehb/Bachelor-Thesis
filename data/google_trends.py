@@ -32,8 +32,8 @@ class TrendReq(UTrendReq):
         return super()._get_data(url, method=GET_METHOD, trim_chars=trim_chars, headers=headers, **kwargs)
 
 #Modifiable filters
-timeframe='2021-01-01 2023-01-12'
-kw_list = ["vetements", "miu miu"]
+timeframe='2022-01-01 2023-01-12'
+kw_list = ["quiet luxury"]
 
 
 # Instantiate the pytrends class and build the payload
@@ -54,7 +54,7 @@ print(data.head())
 start, end = timeframe.split()
 plt.plot(data[kw_list[0]], label=kw_list[0])
 # Ucomment if plotting two items
-plt.plot(data[kw_list[1]], label=kw_list[1])
+#plt.plot(data[kw_list[1]], label=kw_list[1])
 plt.title(f"Popularity over time for: {kw_list[0]}")
 plt.ylabel("Popularity")
 plt.xlabel("Time")

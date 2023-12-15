@@ -70,10 +70,10 @@ def get_video_details(service, video_id):
 
 if __name__ == '__main__':
 
-    KEYWORD1 = "miu miu"
+    KEYWORD1 = "fast fashion"
     KEYWORD2 = ""
-    START_DATE = "2022-08-01T00:00:00Z"
-    END_DATE = "2022-12-12T00:00:00Z"
+    START_DATE = "2023-01-01T00:00:00Z"
+    END_DATE = "2023-12-01T00:00:00Z"
 
     youtube = youtube_authenticate()
 
