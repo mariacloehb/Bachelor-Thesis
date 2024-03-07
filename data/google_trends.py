@@ -26,38 +26,66 @@ headers = {
     'x-client-data': 'CIi2yQEIpbbJAQipncoBCMv9ygEIlKHLAQiGoM0BCPWxzQEI3L3NAQjpxc0BCLrIzQEI49rNAQil3M0BCM/fzQEIteDNAQjg4c0BCNvjzQEIxunNAQiyzcQiGMDLzAEYx+HNARin6s0B',
 }
 
+
 # Extend the default class
 class TrendReq(UTrendReq):
     def _get_data(self, url, method=GET_METHOD, trim_chars=0, **kwargs):
         return super()._get_data(url, method=GET_METHOD, trim_chars=trim_chars, headers=headers, **kwargs)
 
-#Modifiable filters
-timeframe='2022-01-01 2023-01-12'
-kw_list = ["quiet luxury"]
+# #Modifiable filters
+# timeframe='2022-01-01 2023-01-12'
+# kw_list = ["quiet luxury"]
 
 
-# Instantiate the pytrends class and build the payload
-pytrends = TrendReq(retries=0,hl='en-US', tz=360)
-pytrends.build_payload(kw_list, cat=0, timeframe=timeframe, geo='', gprop='')
+# # Instantiate the pytrends class and build the payload
+# pytrends = TrendReq(retries=0,hl='en-US', tz=360)
+# pytrends.build_payload(kw_list, cat=0, timeframe=timeframe, geo='', gprop='')
 
-#1 Interest over Time
-data = pytrends.interest_over_time() 
-data = data.reset_index() 
-print(data.head())
+# #1 Interest over Time
+# data = pytrends.interest_over_time() 
+# data = data.reset_index() 
+# print(data.head())
+
+# df = pd.DataFrame(data)
+# print(df)
 
 #2 Related Queries
 # data2 = pytrends.related_queries()
 #data2 = data2.reset_index()
 #print(data2)
 
-# Plotting results
-start, end = timeframe.split()
-plt.plot(data[kw_list[0]], label=kw_list[0])
-# Ucomment if plotting two items
-#plt.plot(data[kw_list[1]], label=kw_list[1])
-plt.title(f"Popularity over time for: {kw_list[0]}")
-plt.ylabel("Popularity")
-plt.xlabel("Time")
-plt.xticks([0, len(data[kw_list[0]])], [start, end])
-plt.legend()
-plt.show()
+def get_google_trends_data(keywords, timeframe='today 5-y', geo='', gprop=''):
+    # Initialize a pytrends request object
+    pytrends = TrendReq(hl='en-US', tz=360)
+
+    # Build the payload
+    pytrends.build_payload(kw_list=keywords, timeframe=timeframe, geo=geo, gprop=gprop)
+
+    # Fetch the interest over time
+    df = pytrends.interest_over_time()
+    df = df.reset_index() 
+
+    # If the dataframe is empty, return None
+    if df.empty:
+        return None
+
+    # Drop the 'isPartial' column if it exists
+    if 'isPartial' in df.columns:
+        df = df.drop(columns='isPartial')
+
+    return df
+
+# # Plotting results
+# start, end = timeframe.split()
+# plt.plot(data[kw_list[0]], label=kw_list[0])
+# # Ucomment if plotting two items
+# #plt.plot(data[kw_list[1]], label=kw_list[1])
+# plt.title(f"Popularity over time for: {kw_list[0]}")
+# plt.ylabel("Popularity")
+# plt.xlabel("Time")
+# plt.xticks([0, len(data[kw_list[0]])], [start, end])
+# plt.legend()
+# plt.show()
+
+
+
