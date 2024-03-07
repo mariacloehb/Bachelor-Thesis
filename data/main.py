@@ -11,7 +11,7 @@ yt_res_df = yt_res_df.drop(columns=['Video_Timestamp'])
 print(yt_res_df)
 
 timeframe='2022-01-01 2023-01-12'
-kw_list = ["quiet luxury"]
+kw_list = ["ganni blouse"]
 go_df = google_trends.get_google_trends_data(kw_list,timeframe)
 go_df['Semana']= pd.to_datetime(go_df['date']).dt.isocalendar().week
 go_df['Year'] = pd.to_datetime(go_df['date']).dt.year
