@@ -70,10 +70,10 @@ def get_video_details(service, video_id):
 
 if __name__ == '__main__':
 
-    KEYWORD1 = "fast fashion"
+    KEYWORD1 = "New Balance 530"
     KEYWORD2 = ""
-    START_DATE = "2023-01-01T00:00:00Z"
-    END_DATE = "2023-12-01T00:00:00Z"
+    START_DATE = "2022-01-01T00:00:00Z"
+    END_DATE = "2022-12-30T00:00:00Z"
 
     youtube = youtube_authenticate()
 
@@ -118,6 +118,8 @@ if __name__ == '__main__':
     name = KEYWORD1 + '-' + KEYWORD2 if KEYWORD2 else KEYWORD1
     date = START_DATE.split('T')[0] + '_' + END_DATE.split('T')[0]
 
+    directory_path = f'youtube_results/{name}'
+    os.makedirs(directory_path, exist_ok=True)
     # Save video data to .json
     with open(f'youtube_results/{name}_{date}.json', 'w') as file:
         file.write(json.dumps({"items": filtered_sorted_video_data}, indent=4))

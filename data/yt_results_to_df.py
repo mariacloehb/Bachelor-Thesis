@@ -1,13 +1,28 @@
 import pandas as pd
 import json
-def yt_results_to_df(filePath= 'youtube_results/adidas gazelle_2022-01-01_2022-05-01.json') : 
-    with open(filePath, 'r') as file:
-        data = json.load(file)
+import os
+def yt_results_to_df(carpetaPath= 'data/youtube_results') : 
 
-    # Convierte los datos a un DataFrame
-    df = pd.json_normalize(data['items'])
+    total_data= []
+    for archivo in os.listdir(carpetaPath):
+        if archivo.endswith('.json'): 
+            ruta_completa = os.path.join(carpetaPath, archivo)
+
+            #Read content of Json files
+            with open(ruta_completa, 'r') as file:
+                datos_json = json.load(file)
+                total_data.append(datos_json)
+    
+
+    if total_data:
+        # Joining all elements of the list in a joint dataframe
+        df = pd.concat([pd.json_normalize(datos['items']) for datos in total_data], ignore_index=True)
+        return df
+    else:
+        #Error control, if no content, return empty df
+        return pd.DataFrame()
 
     return df
 
 
-#normalizar los dos resultados antes de hacer correlacion
+
